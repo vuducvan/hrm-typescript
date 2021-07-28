@@ -4,7 +4,7 @@ import { v4 as uuid } from 'uuid';
 @Table
 export class Screen extends Model {
   @Column({ primaryKey: true })
-  id: string = uuid();
+  readonly id: string = uuid();
 
   @Column
   moduleName: string;

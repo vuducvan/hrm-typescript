@@ -34,6 +34,9 @@ export class Rolepermission extends Model {
   updatedAt: Date;
 
   @Column
+  url: string;
+
+  @Column
   isDelete: number;
 
   @Column
