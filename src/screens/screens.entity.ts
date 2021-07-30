@@ -1,4 +1,5 @@
-import { Table, Column, Model } from 'sequelize-typescript';
+import { Table, Column, Model, HasOne } from 'sequelize-typescript';
+import { Rolepermission } from '../rolepermissions/rolepermissions.entity';
 import { v4 as uuid } from 'uuid';
 
 @Table
@@ -7,7 +8,7 @@ export class Screen extends Model {
   readonly id: string = uuid();
 
   @Column
-  moduleName: string;
+  screenName: string;
 
   @Column('datetime')
   createdAt: Date;
@@ -23,4 +24,7 @@ export class Screen extends Model {
 
   @Column
   updateBy: string;
+
+  @HasOne(() => Rolepermission)
+  rolepermission: Rolepermission;
 }

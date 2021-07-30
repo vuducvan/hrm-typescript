@@ -1,4 +1,5 @@
 export class UpdateRolePerDto {
+  id: string;
   roleId: string;
   moduleId: string;
   canRead: number;

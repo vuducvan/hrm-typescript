@@ -1,16 +1,26 @@
-import { Table, Column, Model } from 'sequelize-typescript';
+import {
+  Table,
+  Column,
+  Model,
+  ForeignKey,
+  BelongsTo,
+} from 'sequelize-typescript';
+import { Role } from '../roles/roles.entity';
 import { v4 as uuid } from 'uuid';
+import { Screen } from '../screens/screens.entity';
 
 @Table
 export class Rolepermission extends Model {
   @Column({ primaryKey: true })
   id: string = uuid();
 
+  @ForeignKey(() => Role)
   @Column
   roleId: string;
 
+  @ForeignKey(() => Screen)
   @Column
-  moduleId: string;
+  screenId: string;
 
   @Column
   canRead: number;
@@ -44,4 +54,10 @@ export class Rolepermission extends Model {
 
   @Column
   updateBy: string;
+
+  @BelongsTo(() => Role)
+  role: Role;
+
+  @BelongsTo(() => Screen)
+  screen: Screen;
 }

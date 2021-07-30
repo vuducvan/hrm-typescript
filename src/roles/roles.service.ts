@@ -73,6 +73,7 @@ export class RolesService {
         message: `Can not update this role`,
       };
     }
+    updateRoleDto.id = id;
     await this.rolesRepository.update(updateRoleDto, condition);
     return {
       message: `Update success`,

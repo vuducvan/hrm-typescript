@@ -1,4 +1,6 @@
-import { Table, Column, Model } from 'sequelize-typescript';
+import { Table, Column, Model, HasOne } from 'sequelize-typescript';
+import { Rolepermission } from '../rolepermissions/rolepermissions.entity';
+import { Userrole } from '../userroles/userroles.entity';
 import { v4 as uuid } from 'uuid';
 
 @Table
@@ -23,4 +25,10 @@ export class Role extends Model {
 
   @Column
   updateBy: string;
+
+  @HasOne(() => Userrole)
+  userrole: Userrole;
+
+  @HasOne(() => Rolepermission)
+  rolepermission: Rolepermission;
 }

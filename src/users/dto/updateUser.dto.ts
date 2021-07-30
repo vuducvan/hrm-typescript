@@ -13,7 +13,6 @@ export class UpdateUserDto {
   insuranceNumber: string;
   createdAt: Date;
   updatedAt: Date;
-  isDelete: number;
   createBy: string;
   updateBy: string;
 }

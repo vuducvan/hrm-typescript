@@ -78,6 +78,7 @@ export class RolepermissionsService {
         message: `Can not update this role-permission`,
       };
     }
+    updateRolePerDto.id = id;
     await this.rolepermissionsRepository.update(updateRolePerDto, condition);
     return {
       message: `Update success`,

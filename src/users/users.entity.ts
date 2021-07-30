@@ -1,5 +1,8 @@
-import { Table, Column, Model } from 'sequelize-typescript';
+import { Table, Column, Model, HasMany, HasOne } from 'sequelize-typescript';
+import { Userrole } from '../userroles/userroles.entity';
 import { v4 as uuid } from 'uuid';
+import { Form } from '../forms/forms.entity';
+import { Account } from '../accounts/accounts.entity';
 
 @Table
 export class User extends Model {
@@ -53,4 +56,13 @@ export class User extends Model {
 
   @Column
   updateBy: string;
+
+  @HasMany(() => Userrole)
+  userroles: Userrole[];
+
+  @HasMany(() => Form)
+  forms: Form[];
+
+  @HasOne(() => Account)
+  account: Account;
 }

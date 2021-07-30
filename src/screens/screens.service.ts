@@ -73,6 +73,7 @@ export class ScreensService {
         message: `Can not update this screen`,
       };
     }
+    updateScreenDto.id = id;
     await this.screensRepository.update(updateScreenDto, condition);
     return {
       message: `Update success`,

@@ -87,8 +87,8 @@ export class UsersService {
         message: `Update success`,
       };
     }
-    // return {
-    //   message: `Can not update this user`,
-    // };
+    return {
+      message: `Can not update this user`,
+    };
   }
 }

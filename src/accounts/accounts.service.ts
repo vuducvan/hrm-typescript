@@ -94,6 +94,7 @@ export class AccountsService {
         message: `Can not update this acocunt`,
       };
     }
+    updateAccountDto.id = id;
     await this.accountsRepository.update(updateAccountDto, condition);
     return {
       message: `Update success`,

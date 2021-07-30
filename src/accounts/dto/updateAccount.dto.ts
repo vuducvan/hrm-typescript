@@ -1,4 +1,5 @@
 export class UpdateAccountDto {
+  id: string;
   userId: string;
   username: string;
   password: string;

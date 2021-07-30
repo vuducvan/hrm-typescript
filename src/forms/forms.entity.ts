@@ -1,4 +1,11 @@
-import { Table, Column, Model } from 'sequelize-typescript';
+import {
+  Table,
+  Column,
+  Model,
+  ForeignKey,
+  BelongsTo,
+} from 'sequelize-typescript';
+import { User } from '../users/users.entity';
 import { v4 as uuid } from 'uuid';
 
 @Table
@@ -6,6 +13,7 @@ export class Form extends Model {
   @Column({ primaryKey: true })
   id: string = uuid();
 
+  @ForeignKey(() => User)
   @Column
   userId: string;
 
@@ -44,4 +52,7 @@ export class Form extends Model {
 
   @Column
   updateBy: string;
+
+  @BelongsTo(() => User)
+  user: User;
 }

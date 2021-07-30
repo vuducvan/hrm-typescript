@@ -15,11 +15,11 @@ export class AuthService {
     if (accountLogin) {
       //compare pass in request with hashed password in database
       if (await bcrypt.compare(password, accountLogin.password)) {
-        const payload = accountLogin.userId;
+        const userId = accountLogin.userId;
         return {
           status: `success`,
           username: accountLogin.username,
-          accessToken: this.jwtService.sign({ payload }),
+          accessToken: this.jwtService.sign({ userId: userId }),
         };
       }
     }
