@@ -3,12 +3,16 @@ import { Account } from './accounts.entity';
 import { CreateAccountDto } from './dto/createAccount.dto';
 import { UpdateAccountDto } from './dto/updateAccount.dto';
 import * as bcrypt from 'bcrypt';
+import { RequestDto } from '../middlewares/dto/request.dto';
+import { JwtService } from '@nestjs/jwt';
+import { TokenDto } from '../roles/dto/tokenDto';
 
 @Injectable()
 export class AccountsService {
   constructor(
     @Inject('ACCOUNTS_REPOSITORY')
     private accountsRepository: typeof Account,
+    private jwtService: JwtService,
   ) {}
 
   //get all account with pagging
@@ -45,7 +49,15 @@ export class AccountsService {
   }
 
   //create new account
-  async create(createAccountDto: CreateAccountDto): Promise<Account> {
+  async create(
+    createAccountDto: CreateAccountDto,
+    req: RequestDto,
+  ): Promise<Account> {
+    //get token in request.header
+    const token = req.header('token');
+    const payload: TokenDto = await this.jwtService.verifyAsync(token); //verify token to get userId
+    createAccountDto.createBy = payload.userId;
+    createAccountDto.updateBy = payload.userId;
     createAccountDto.isDelete = 0;
     const salt = await bcrypt.genSalt(10);
     createAccountDto.password = await bcrypt.hash(
@@ -76,7 +88,14 @@ export class AccountsService {
   }
 
   //update account by id
-  async update(updateAccountDto: UpdateAccountDto, id: string): Promise<any> {
+  async update(
+    updateAccountDto: UpdateAccountDto,
+    id: string,
+    req: RequestDto,
+  ): Promise<any> {
+    //get token in request.header
+    const token = req.header('token');
+    const payload: TokenDto = await this.jwtService.verifyAsync(token); //verify token to get userId
     const condition = { where: { id: id, isDelete: 0 } };
     const salt = await bcrypt.genSalt(10);
     updateAccountDto.password = await bcrypt.hash(
@@ -95,6 +114,7 @@ export class AccountsService {
       };
     }
     updateAccountDto.id = id;
+    updateAccountDto.updateBy = payload.userId;
     await this.accountsRepository.update(updateAccountDto, condition);
     return {
       message: `Update success`,

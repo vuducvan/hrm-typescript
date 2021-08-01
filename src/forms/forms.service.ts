@@ -7,12 +7,16 @@ import { SubmitFormDto } from './dto/submitForm.dto';
 import { ApproveFormDto } from './dto/approveForm.dto';
 import { CloseFormDto } from './dto/closeForm.dto';
 import { ReportFormDto } from './dto/reportFrom.dto';
+import { MailService } from '../mail/mail.service';
+import { User } from '../users/users.entity';
+import { RequestDto } from '../middlewares/dto/request.dto';
 
 @Injectable()
 export class FormsService {
   constructor(
     @Inject('FORMS_REPOSITORY')
     private formsRepository: typeof Form,
+    private mailService: MailService,
   ) {}
 
   //get all form with pagging
@@ -49,17 +53,33 @@ export class FormsService {
   }
 
   //create new form
-  async create(createFormDto: CreateFromDto): Promise<any> {
+  async create(createFormDto: CreateFromDto, req: RequestDto): Promise<any> {
     try {
+      const listEmail: string[] = [];
       createFormDto.isDelete = 0;
       createFormDto.status = FORM_STATUS.NEW;
+      createFormDto.createBy = req.userId;
+      createFormDto.updateBy = req.userId;
       const userIdArray = createFormDto.userId;
-      createFormDto.userId = {};
-      // const listEmail: string[] = [];
+      const listUser = await User.findAll({
+        where: {
+          id: userIdArray,
+          isDelete: 0,
+        },
+      });
+      if (listUser.length) {
+        listUser.forEach((e) => {
+          listEmail.push(e.email);
+        });
+      }
+
       for (const x in userIdArray) {
         createFormDto.userId = userIdArray[x];
         await this.formsRepository.create(createFormDto);
       }
+      const subject = `[Annoucement] ${createFormDto.typeOf} form for employee`;
+      const body = `You have a new ${createFormDto.typeOf} form, Let's finish`;
+      await this.mailService.sendNotificationMail(listEmail, subject, body);
       return {
         message: `Create success`,
       };
@@ -95,7 +115,11 @@ export class FormsService {
   }
 
   //update form by id
-  async update(updateFromDto: UpdateFromDto, id: string): Promise<any> {
+  async update(
+    updateFormDto: UpdateFromDto,
+    id: string,
+    req: RequestDto,
+  ): Promise<any> {
     try {
       const condition = { where: { id: id, isDelete: 0 } };
       const Temp = await this.formsRepository.findOne({
@@ -109,8 +133,9 @@ export class FormsService {
           message: `Can not update this role`,
         };
       }
-      updateFromDto.id = id;
-      await this.formsRepository.update(updateFromDto, condition);
+      updateFormDto.id = id;
+      updateFormDto.updateBy = req.userId;
+      await this.formsRepository.update(updateFormDto, condition);
       return {
         message: `Update success`,
       };
@@ -121,7 +146,11 @@ export class FormsService {
   }
 
   //submit form
-  async submit(updateFromDto: SubmitFormDto, id: string): Promise<any> {
+  async submit(
+    updateFormDto: SubmitFormDto,
+    id: string,
+    req: RequestDto,
+  ): Promise<any> {
     try {
       const condition = { where: { id: id, isDelete: 0 } };
       const Temp = await this.formsRepository.findOne({
@@ -135,9 +164,10 @@ export class FormsService {
           message: `Can not submit this form`,
         };
       }
-      updateFromDto.id = id;
-      updateFromDto.status = FORM_STATUS.PENDING_APPROVE;
-      await this.formsRepository.update(updateFromDto, condition);
+      updateFormDto.id = id;
+      updateFormDto.updateBy = req.userId;
+      updateFormDto.status = FORM_STATUS.PENDING_APPROVE;
+      await this.formsRepository.update(updateFormDto, condition);
       return {
         message: `Submit success`,
       };
@@ -148,7 +178,11 @@ export class FormsService {
   }
 
   //approve form
-  async approve(updateFromDto: ApproveFormDto, id: string): Promise<any> {
+  async approve(
+    updateFormDto: ApproveFormDto,
+    id: string,
+    req: RequestDto,
+  ): Promise<any> {
     try {
       const condition = { where: { id: id, isDelete: 0 } };
       const Temp = await this.formsRepository.findOne({
@@ -162,9 +196,10 @@ export class FormsService {
           message: `Can not approve this form`,
         };
       }
-      updateFromDto.id = id;
-      updateFromDto.status = FORM_STATUS.APPROVED;
-      await this.formsRepository.update(updateFromDto, condition);
+      updateFormDto.id = id;
+      updateFormDto.updateBy = req.userId;
+      updateFormDto.status = FORM_STATUS.APPROVED;
+      await this.formsRepository.update(updateFormDto, condition);
       return {
         message: `Approve success`,
       };
@@ -175,7 +210,11 @@ export class FormsService {
   }
 
   //close form
-  async close(updateFromDto: CloseFormDto, id: string): Promise<any> {
+  async close(
+    updateFormDto: CloseFormDto,
+    id: string,
+    req: RequestDto,
+  ): Promise<any> {
     try {
       const condition = { where: { id: id, isDelete: 0 } };
       const Temp = await this.formsRepository.findOne({
@@ -189,9 +228,10 @@ export class FormsService {
           message: `Can not close this form`,
         };
       }
-      updateFromDto.id = id;
-      updateFromDto.status = FORM_STATUS.CLOSED;
-      await this.formsRepository.update(updateFromDto, condition);
+      updateFormDto.id = id;
+      updateFormDto.updateBy = req.userId;
+      updateFormDto.status = FORM_STATUS.CLOSED;
+      await this.formsRepository.update(updateFormDto, condition);
       return {
         message: `Close success`,
       };

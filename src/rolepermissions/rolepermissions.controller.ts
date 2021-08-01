@@ -6,11 +6,13 @@ import {
   Patch,
   Post,
   Query,
+  Req,
 } from '@nestjs/common';
 import { RolepermissionsService } from './rolepermissions.service';
 import { QueryParam } from '../const/queryParam';
 import { CreateRolePerDto } from './dto/createRolePer.dto';
 import { UpdateRolePerDto } from './dto/updateRolePer.dto';
+import { RequestDto } from '../middlewares/dto/request.dto';
 
 @Controller('rolepermissions')
 export class RolepermissionsController {
@@ -33,8 +35,8 @@ export class RolepermissionsController {
 
   //create new role-per
   @Post()
-  create(@Body() body: CreateRolePerDto) {
-    return this.rolepermissionsService.create(body);
+  create(@Body() body: CreateRolePerDto, @Req() req: RequestDto) {
+    return this.rolepermissionsService.create(body, req);
   }
 
   //delete role-per by update isDelete = 1
@@ -45,7 +47,11 @@ export class RolepermissionsController {
 
   //update role-per by id
   @Patch('/update/:id')
-  update(@Param('id') id: string, @Body() body: UpdateRolePerDto) {
-    return this.rolepermissionsService.update(body, id);
+  update(
+    @Param('id') id: string,
+    @Body() body: UpdateRolePerDto,
+    @Req() req: RequestDto,
+  ) {
+    return this.rolepermissionsService.update(body, id, req);
   }
 }

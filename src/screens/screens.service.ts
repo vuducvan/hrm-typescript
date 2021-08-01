@@ -2,12 +2,16 @@ import { Injectable, Inject } from '@nestjs/common';
 import { CreateScreenDto } from './dto/createScreen.dto';
 import { UpdateScreenDto } from './dto/updateScreen.dto';
 import { Screen } from './screens.entity';
+import { RequestDto } from '../middlewares/dto/request.dto';
+import { JwtService } from '@nestjs/jwt';
+import { TokenDto } from '../roles/dto/tokenDto';
 
 @Injectable()
 export class ScreensService {
   constructor(
     @Inject('SCREENS_REPOSITORY')
     private screensRepository: typeof Screen,
+    private jwtService: JwtService,
   ) {}
 
   //get all screen with pagging
@@ -34,9 +38,21 @@ export class ScreensService {
   }
 
   //create new screen
-  async create(createScreenDto: CreateScreenDto): Promise<Screen> {
-    createScreenDto.isDelete = 0;
-    return await this.screensRepository.create<Screen>(createScreenDto);
+  async create(
+    createScreenDto: CreateScreenDto,
+    req: RequestDto,
+  ): Promise<Screen> {
+    try {
+      //get token in request.header
+      const token = req.header('token');
+      const payload: TokenDto = await this.jwtService.verifyAsync(token); //verify token to get userId
+      createScreenDto.createBy = payload.userId;
+      createScreenDto.updateBy = payload.userId;
+      createScreenDto.isDelete = 0;
+      return await this.screensRepository.create<Screen>(createScreenDto);
+    } catch (error) {
+      throw error;
+    }
   }
 
   //delete screen by update isDelete = 1
@@ -60,7 +76,14 @@ export class ScreensService {
   }
 
   //update screen by id
-  async update(updateScreenDto: UpdateScreenDto, id: string): Promise<any> {
+  async update(
+    updateScreenDto: UpdateScreenDto,
+    id: string,
+    req: RequestDto,
+  ): Promise<any> {
+    //get token in request.header
+    const token = req.header('token');
+    const payload: TokenDto = await this.jwtService.verifyAsync(token); //verify token to get userId
     const condition = { where: { id: id, isDelete: 0 } };
     const screenTemp: Screen = await this.screensRepository.findOne({
       where: {
@@ -74,6 +97,7 @@ export class ScreensService {
       };
     }
     updateScreenDto.id = id;
+    updateScreenDto.updateBy = payload.userId;
     await this.screensRepository.update(updateScreenDto, condition);
     return {
       message: `Update success`,

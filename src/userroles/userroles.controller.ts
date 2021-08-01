@@ -6,11 +6,13 @@ import {
   Patch,
   Post,
   Query,
+  Req,
 } from '@nestjs/common';
 import { UserrolesService } from './userroles.service';
 import { QueryParam } from '../const/queryParam';
 import { CreateUserroleDto } from './dto/createUserrole.dto';
 import { UpdateUserroleDto } from './dto/updateUserrole.dto';
+import { RequestDto } from '../middlewares/dto/request.dto';
 
 @Controller('userroles')
 export class UserrolesController {
@@ -30,8 +32,8 @@ export class UserrolesController {
 
   //create new userrole
   @Post()
-  create(@Body() body: CreateUserroleDto) {
-    return this.userrolesService.create(body);
+  create(@Body() body: CreateUserroleDto, @Req() req: RequestDto) {
+    return this.userrolesService.create(body, req);
   }
 
   //delete userrole by update isDelete = 1
@@ -42,7 +44,11 @@ export class UserrolesController {
 
   //update userrole by id
   @Patch('/update/:id')
-  update(@Param('id') id: string, @Body() body: UpdateUserroleDto) {
-    return this.userrolesService.update(body, id);
+  update(
+    @Param('id') id: string,
+    @Body() body: UpdateUserroleDto,
+    @Req() req: RequestDto,
+  ) {
+    return this.userrolesService.update(body, id, req);
   }
 }

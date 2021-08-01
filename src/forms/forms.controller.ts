@@ -6,6 +6,7 @@ import {
   Patch,
   Post,
   Query,
+  Req,
   UseGuards,
 } from '@nestjs/common';
 import { FormsService } from './forms.service';
@@ -17,6 +18,7 @@ import { ApproveFormDto } from './dto/approveForm.dto';
 import { CloseFormDto } from './dto/closeForm.dto';
 import { ReportFormDto } from './dto/reportFrom.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { RequestDto } from '../middlewares/dto/request.dto';
 
 @Controller('forms')
 export class FormsController {
@@ -37,8 +39,8 @@ export class FormsController {
 
   //create new forms
   @Post()
-  create(@Body() body: CreateFromDto) {
-    return this.formsService.create(body);
+  create(@Body() body: CreateFromDto, @Req() req: RequestDto) {
+    return this.formsService.create(body, req);
   }
 
   //delete form by update isDelete = 1;
@@ -49,26 +51,42 @@ export class FormsController {
 
   //update form by id
   @Patch('/update/:id')
-  update(@Param('id') id: string, @Body() body: UpdateFromDto) {
-    return this.formsService.update(body, id);
+  update(
+    @Param('id') id: string,
+    @Body() body: UpdateFromDto,
+    @Req() req: RequestDto,
+  ) {
+    return this.formsService.update(body, id, req);
   }
 
   //submit form
   @Patch('/submit/:id')
-  submitForm(@Param('id') id: string, @Body() body: SubmitFormDto) {
-    return this.formsService.submit(body, id);
+  submitForm(
+    @Param('id') id: string,
+    @Body() body: SubmitFormDto,
+    @Req() req: RequestDto,
+  ) {
+    return this.formsService.submit(body, id, req);
   }
 
   //approve form
   @Patch('/approve/:id')
-  approveForm(@Param('id') id: string, @Body() body: ApproveFormDto) {
-    return this.formsService.approve(body, id);
+  approveForm(
+    @Param('id') id: string,
+    @Body() body: ApproveFormDto,
+    @Req() req: RequestDto,
+  ) {
+    return this.formsService.approve(body, id, req);
   }
 
   //close form
   @Patch('/close/:id')
-  closeForm(@Param('id') id: string, @Body() body: CloseFormDto) {
-    return this.formsService.close(body, id);
+  closeForm(
+    @Param('id') id: string,
+    @Body() body: CloseFormDto,
+    @Req() req: RequestDto,
+  ) {
+    return this.formsService.close(body, id, req);
   }
 
   //get report about form

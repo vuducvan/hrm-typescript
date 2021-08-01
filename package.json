@@ -11,6 +11,7 @@
     "build": "tsc"
   },
   "dependencies": {
+    "@nestjs-modules/mailer": "^1.6.0",
     "@nestjs/common": "^8.0.0",
     "@nestjs/core": "^8.0.0",
     "@nestjs/jwt": "^8.0.0",
@@ -19,7 +20,9 @@
     "@nestjs/sequelize": "^8.0.0",
     "@nestjs/typeorm": "^8.0.1",
     "bcrypt": "^5.0.1",
+    "handlebars": "^4.7.7",
     "mysql2": "^2.2.5",
+    "nodemailer": "^6.6.3",
     "passport": "^0.4.1",
     "passport-jwt": "^4.0.0",
     "passport-local": "^1.0.0",

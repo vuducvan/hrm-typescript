@@ -6,5 +6,5 @@ export class SubmitFormDto {
   achievement: string;
   status: string;
   updateAt: Date;
-  updateby: Date;
+  updateBy: string;
 }

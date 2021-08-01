@@ -21,9 +21,12 @@ import {
 } from '../middlewares/checkRole.middleware';
 import { JwtModule } from '@nestjs/jwt';
 import { jwtConst } from '../const/auth.const';
+import { MailModule } from '../mail/mail.module';
+import { MailService } from '../mail/mail.service';
 
 @Module({
   imports: [
+    MailModule,
     DatabaseModule,
     JwtModule.register({
       secret: jwtConst.secret,
@@ -31,7 +34,7 @@ import { jwtConst } from '../const/auth.const';
     }),
   ],
   controllers: [FormsController],
-  providers: [FormsService, ...formsProviders],
+  providers: [FormsService, MailService, ...formsProviders],
 })
 export class FormsModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

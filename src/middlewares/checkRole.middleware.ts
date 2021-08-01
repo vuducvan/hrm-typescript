@@ -14,7 +14,8 @@ import { RoleCheckDto } from './dto/roleCheck.dto';
 import { RequestDto } from './dto/request.dto';
 import { Form } from '../forms/forms.entity';
 import { FORM_STATUS } from '../const/formStatus.enum';
-import { CreateFromDto } from 'src/forms/dto/createFrom.dto';
+import { CreateFromDto } from '../forms/dto/createFrom.dto';
+import { ROLE } from '../const/role.const';
 
 //get permission of user from userId in token
 export async function getRolePermission(id: string) {
@@ -255,7 +256,7 @@ export class CheckCanClose implements NestMiddleware {
       const roleCheck = await getRolePermission(payload.userId);
       let check = false;
       for (const x in roleCheck) {
-        if (!check && roleCheck[x].role.roleName === 'hr') {
+        if (!check && roleCheck[x].role.roleName === ROLE.HR) {
           check = true;
         }
       }
@@ -332,8 +333,8 @@ export class CheckCanGetReport implements NestMiddleware {
         if (
           //check role if it were hr or admin, next();
           !check &&
-          (UserRoleTemp[x].role.roleName === 'hr' ||
-            UserRoleTemp[x].role.roleName === 'admin')
+          (UserRoleTemp[x].role.roleName === ROLE.HR ||
+            UserRoleTemp[x].role.roleName === ROLE.ADMIN)
         ) {
           check = true;
         }

@@ -3,5 +3,5 @@ export class ApproveFormDto {
   managerComment: string;
   status: string;
   updateAt: Date;
-  updateBy: Date;
+  updateBy: string;
 }

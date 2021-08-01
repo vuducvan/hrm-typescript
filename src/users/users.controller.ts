@@ -6,6 +6,7 @@ import {
   Patch,
   Post,
   Query,
+  Req,
   UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
@@ -16,6 +17,7 @@ import { CreateUserDto } from './dto/createUser.dto';
 import { Express } from 'express';
 import { multerOptions } from '../config/multer.config';
 import { UpdateUserDto } from './dto/updateUser.dto';
+import { RequestDto } from '../middlewares/dto/request.dto';
 
 @Controller('users')
 export class UsersController {
@@ -39,9 +41,10 @@ export class UsersController {
   uploadFile(
     @Body() body: CreateUserDto,
     @UploadedFile() file: Express.Multer.File,
+    @Req() req: RequestDto,
   ) {
     body.avatar = file.originalname;
-    return this.usersService.create(body);
+    return this.usersService.createNewUser(body, req);
   }
 
   //delete user by update isDelete = 1
@@ -57,8 +60,9 @@ export class UsersController {
     @Param('id') id: string,
     @Body() body: UpdateUserDto,
     @UploadedFile() file: Express.Multer.File,
+    @Req() req: RequestDto,
   ) {
     body.avatar = file.originalname;
-    return this.usersService.update(body, id);
+    return this.usersService.update(body, id, req);
   }
 }

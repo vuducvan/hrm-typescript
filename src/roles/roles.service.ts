@@ -1,5 +1,8 @@
 import { Injectable, Inject } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
+import { RequestDto } from '../middlewares/dto/request.dto';
 import { CreateRoleDto } from './dto/createRole.dto';
+import { TokenDto } from './dto/tokenDto';
 import { UpdateRoleDto } from './dto/updateRole.dto';
 import { Role } from './roles.entity';
 
@@ -8,6 +11,7 @@ export class RolesService {
   constructor(
     @Inject('ROLES_REPOSITORY')
     private rolesRepository: typeof Role,
+    private jwtService: JwtService,
   ) {}
 
   //get all role with pagging
@@ -34,9 +38,18 @@ export class RolesService {
   }
 
   //create new role
-  async create(createRoleDto: CreateRoleDto): Promise<Role> {
-    createRoleDto.isDelete = 0;
-    return await this.rolesRepository.create<Role>(createRoleDto);
+  async create(createRoleDto: CreateRoleDto, req: RequestDto): Promise<Role> {
+    try {
+      //get token in request.header
+      const token = req.header('token');
+      const payload: TokenDto = await this.jwtService.verifyAsync(token); //verify token to get userId
+      createRoleDto.createBy = payload.userId;
+      createRoleDto.updateBy = payload.userId;
+      createRoleDto.isDelete = 0;
+      return await this.rolesRepository.create<Role>(createRoleDto);
+    } catch (error) {
+      throw error;
+    }
   }
 
   //delete role by update isDelete = 1
@@ -60,23 +73,35 @@ export class RolesService {
   }
 
   //update role by id
-  async update(updateRoleDto: UpdateRoleDto, id: string): Promise<any> {
-    const condition = { where: { id: id, isDelete: 0 } };
-    const Temp = await this.rolesRepository.findOne({
-      where: {
-        id,
-        isDelete: 0,
-      },
-    });
-    if (!Temp) {
+  async update(
+    updateRoleDto: UpdateRoleDto,
+    id: string,
+    req: RequestDto,
+  ): Promise<any> {
+    try {
+      //get token in request.header
+      const token = req.header('token');
+      const payload: TokenDto = await this.jwtService.verifyAsync(token); //verify token to get userId
+      const condition = { where: { id: id, isDelete: 0 } };
+      const Temp = await this.rolesRepository.findOne({
+        where: {
+          id,
+          isDelete: 0,
+        },
+      });
+      if (!Temp) {
+        return {
+          message: `Can not update this role`,
+        };
+      }
+      updateRoleDto.id = id;
+      updateRoleDto.updateBy = payload.userId;
+      await this.rolesRepository.update(updateRoleDto, condition);
       return {
-        message: `Can not update this role`,
+        message: `Update success`,
       };
+    } catch (error) {
+      throw error;
     }
-    updateRoleDto.id = id;
-    await this.rolesRepository.update(updateRoleDto, condition);
-    return {
-      message: `Update success`,
-    };
   }
 }

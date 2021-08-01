@@ -18,7 +18,7 @@ export const databaseProviders = [
         username: 'root',
         password: 'Dankir_20',
         database: 'HRM_project',
-        // logging: false,
+        logging: false,
       });
       sequelize.addModels([
         User,
